@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mr Store — Gerador de Licenças</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0d0f;
+      --surface:   #17171a;
+      --surface2:  #1f1f24;
+      --border:    #2a2a30;
+      --accent:    #ed1c24;
+      --accent-dim:#9b1219;
+      --green:     #22c55e;
+      --gold:      #f59e0b;
+      --text:      #f1f1f1;
+      --muted:     #7a7a8a;
+      --radius:    14px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Inter", system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Header ── */
+    header {
+      width: 100%;
+      max-width: 900px;
+      padding: 40px 24px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 0 32px rgba(237,28,36,0.35);
+    }
+
+    header h1 {
+      font-size: clamp(22px, 5vw, 32px);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    header h1 span { color: var(--accent); }
+
+    header p {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 480px;
+      line-height: 1.6;
+    }
+
+    /* ── Main card ── */
+    main {
+      width: 100%;
+      max-width: 900px;
+      padding: 32px 24px 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ── Stock grid ── */
+    .stock-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+    }
+
+    .stock-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color .2s, transform .15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stock-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.03) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .stock-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .stock-card .icon {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .stock-card .name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .stock-card .count {
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stock-card .count.green { color: var(--green); }
+    .stock-card .count.red   { color: var(--accent); }
+    .stock-card .count.gold  { color: var(--gold); }
+
+    .stock-card .label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* badge de desconto */
+    .badge {
+      display: inline-block;
+      background: var(--gold);
+      color: #000;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px;
+      letter-spacing: .3px;
+      align-self: flex-start;
+    }
+
+    /* ── Info card ── */
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .info-card h2 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-text {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--muted);
+      padding-top: 4px;
+    }
+
+    .step-text strong { color: var(--text); }
+
+    /* ── Discord button ── */
+    .discord-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s, transform .12s;
+      box-shadow: 0 4px 20px rgba(237,28,36,.35);
+      align-self: flex-start;
+    }
+
+    .discord-btn:hover {
+      background: var(--accent-dim);
+      transform: translateY(-1px);
+    }
+
+    .discord-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+    /* ── Update bar ── */
+    .update-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 16px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .3; }
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: auto;
+      padding: 24px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ── Skeleton loader ── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+      width: 60px;
+      height: 44px;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">⚡</div>
+    <h1>Mr Store <span>Gerador</span></h1>
+    <p>Contas premium entregues automaticamente via Discord. Veja o estoque disponível abaixo.</p>
+  </header>
+
+  <main>
+
+    <!-- Barra de status -->
+    <div class="update-bar">
+      <span class="dot"></span>
+      <span id="update-text">Carregando estoque…</span>
+    </div>
+
+    <!-- Grid de estoque -->
+    <div class="stock-grid" id="stock-grid">
+      <!-- Rockstar -->
+      <div class="stock-card">
+        <span class="icon">🎮</span>
+        <span class="name">Rockstar</span>
+        <span class="count" id="count-rockstar"><span class="skeleton"></span></span>
+        <span class="label">disponível(is)</span>
+      </div>
+      <!-- Discord -->
+      <div class="stock-card">
+        <span class="icon">💬</span>
+        <span class="name">Discord</span>
+        <span class="count" id="count-discord"><span class="skeleton"></span></span>
+        <span class="label">disponível(is)</span>
+      </div>
+      <!-- Steam -->
+      <div class="stock-card">
+        <span class="icon">🎮</span>
+        <span class="name">Steam</span>
+        <span class="count" id="count-steam"><span class="skeleton"></span></span>
+        <span class="label">disponível(is)</span>
+      </div>
+      <!-- Rockstar 50% -->
+      <div class="stock-card">
+        <span class="icon">🏷️</span>
+        <span class="name">Rockstar</span>
+        <span class="badge">50% OFF</span>
+        <span class="count gold" id="count-rockstar-50"><span class="skeleton"></span></span>
+        <span class="label">disponível(is)</span>
+      </div>
+    </div>
+
+    <!-- Como funciona -->
+    <div class="info-card">
+      <h2>🔐 Como funciona</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <span class="step-text"><strong>Compre um plano</strong> e receba sua key de acesso.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <span class="step-text"><strong>Entre no Discord</strong> e resgate a key no painel.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <span class="step-text"><strong>Escolha um produto</strong> e receba a conta por mensagem privada.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <span class="step-text">Cada produto tem <strong>cooldown individual de 2 horas</strong>.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botão Discord -->
+    <a
+      class="discord-btn"
+      href="https://discord.com/channels/1522456699082903572/1563638044286918757"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <!-- Discord logo SVG -->
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.033.056a19.85 19.85 0 0 0 5.993 3.03.077.077 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+      </svg>
+      Ir para o Discord
+    </a>
+
+  </main>
+
+  <footer>
+    &copy; 2026 Mr Store · Todos os direitos reservados
+  </footer>
+
+  <script>
+    const DISCORD_SERVER = "https://discord.com/channels/1522456699082903572/1563638044286918757";
+
+    function setCount(id, value) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const n = Number(value);
+      el.textContent = n;
+      el.className = "count" + (id.includes("50") ? " gold" : n > 0 ? " green" : " red");
+    }
+
+    async function fetchStock() {
+      try {
+        const res = await fetch("/api/stock");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+
+        setCount("count-rockstar",    data.rockstar);
+        setCount("count-discord",     data.discord);
+        setCount("count-steam",       data.steam);
+        setCount("count-rockstar-50", data.rockstar_50);
+
+        const now = new Date().toLocaleTimeString("pt-BR");
+        document.getElementById("update-text").textContent =
+          `Estoque atualizado às ${now}`;
+      } catch (err) {
+        document.getElementById("update-text").textContent =
+          "Erro ao carregar estoque — tentando novamente…";
+        console.error(err);
+      }
+    }
+
+    // Buscar imediatamente e depois a cada 30 segundos
+    fetchStock();
+    setInterval(fetchStock, 30_000);
+  </script>
+
+</body>
+</html>

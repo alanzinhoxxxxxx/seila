@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: novo-bot
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BOT_TOKEN
+        sync: false
+      - key: ADMIN_IDS
+        sync: false
+      - key: LICENSE_SECRET
+        sync: false
+      - key: PREFIX
+        value: "!"
+      - key: PANEL_CHANNEL_ID
+        sync: false
+      - key: LOG_CHANNEL_ID
+        sync: false
+      - key: PRODUCT_LOG_CHANNEL_ID
+        sync: false
+      - key: STATUS_CHANNEL_ID
+        sync: false
+      - key: STATUS_GUILD_ID
+        sync: false
+      - key: DISCORD_INVITE
+        sync: false
+      - key: STATS_CHANNEL_ID
+        sync: false
+      - key: MAIN_GUILD_ID
+        sync: false

@@ -1,0 +1,20 @@
+{
+  "name": "novo-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bot Discord para distribuir contas digitais com licencas por key.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "web": "node web/server.js",
+    "start:all": "node src/index.js & node web/server.js"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "dependencies": {
+    "@discordjs/voice": "^0.16.1",
+    "discord.js": "^14.22.1",
+    "dotenv": "^16.4.7"
+  }
+}
