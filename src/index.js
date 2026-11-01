@@ -502,8 +502,8 @@ async function refreshPanel() {
 // ---------------------------------------------------------------------------
 
 function adminPanel() {
-  // Linha 1 — estoque normal
-  const rowStock1 = new ActionRowBuilder().addComponents(
+  // Linha 1 — Adicionar estoque
+  const rowStock = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId("stock:add:rockstar")
       .setLabel("＋ Rockstar")
@@ -522,115 +522,94 @@ function adminPanel() {
       .setStyle(ButtonStyle.Success),
   );
 
-  // Linha 1.5 — Resgatar 10 unidades de cada produto
-  const rowBulkRedeem = new ActionRowBuilder().addComponents(
+  // Linha 2 — Resgatar produtos e Keys
+  const rowRedeemKeys = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId("admin:redeem10:rockstar")
-      .setLabel("🎁 10x Rockstar")
-      .setStyle(ButtonStyle.Secondary),
-    new ButtonBuilder()
-      .setCustomId("admin:redeem10:discord")
-      .setLabel("🎁 10x Discord")
-      .setStyle(ButtonStyle.Secondary),
-    new ButtonBuilder()
-      .setCustomId("admin:redeem10:steam")
-      .setLabel("🎁 10x Steam")
-      .setStyle(ButtonStyle.Secondary),
-    new ButtonBuilder()
-      .setCustomId("admin:redeem10:rockstar_50")
-      .setLabel("🎁 10x Rockstar 50%")
-      .setStyle(ButtonStyle.Secondary),
-  );
-
-  // Linha 2 — keys e gerenciamento
-  const rowAdmin = new ActionRowBuilder().addComponents(
+      .setCustomId("admin:bulk-redeem")
+      .setLabel("🎁 Resgatar Produtos")
+      .setEmoji("📦")
+      .setStyle(ButtonStyle.Success),
     new ButtonBuilder()
       .setCustomId("key:open:single")
-      .setLabel("🔑 Gerar key")
+      .setLabel("🔑 Gerar Key")
       .setStyle(ButtonStyle.Secondary),
     new ButtonBuilder()
       .setCustomId("key:open:batch")
-      .setLabel("📦 Gerar em lote")
+      .setLabel("📦 Keys em Lote")
       .setStyle(ButtonStyle.Secondary),
     new ButtonBuilder()
-      .setCustomId("admin:reset-key")
-      .setLabel("🔄 Resetar key")
-      .setStyle(ButtonStyle.Primary),
-    new ButtonBuilder()
-      .setCustomId("admin:revoke")
-      .setLabel("🚫 Remover acesso")
-      .setStyle(ButtonStyle.Danger),
-    new ButtonBuilder()
-      .setCustomId("admin:plans")
-      .setLabel("📋 Ver planos")
+      .setCustomId("key:open:free")
+      .setLabel("🆓 Key Free")
       .setStyle(ButtonStyle.Secondary),
   );
 
-  // Linha 3 — key free + blacklist
-  const rowFree = new ActionRowBuilder().addComponents(
+  // Linha 3 — Gerenciamento
+  const rowManagement = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId("key:open:free")
-      .setLabel("🆓 Gerar key free")
-      .setStyle(ButtonStyle.Success),
+      .setCustomId("admin:reset-key")
+      .setLabel("🔄 Resetar Key")
+      .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
-      .setCustomId("key:open:free:batch")
-      .setLabel("🆓 Gerar free em lote")
-      .setStyle(ButtonStyle.Success),
+      .setCustomId("admin:revoke")
+      .setLabel("🚫 Remover Acesso")
+      .setStyle(ButtonStyle.Danger),
+    new ButtonBuilder()
+      .setCustomId("admin:plans")
+      .setLabel("📋 Ver Planos")
+      .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
       .setCustomId("admin:toggle-free")
-      .setLabel("⏸️ Pausar keys free")
+      .setLabel("⏸️ Pausar Free")
       .setStyle(ButtonStyle.Secondary),
+  );
+
+  // Linha 4 — Blacklist
+  const rowBlacklist = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId("admin:blacklist:add")
-      .setLabel("⛔ Blacklist")
+      .setLabel("⛔ Adicionar Blacklist")
       .setStyle(ButtonStyle.Danger),
     new ButtonBuilder()
       .setCustomId("admin:blacklist:remove")
       .setLabel("✅ Remover Blacklist")
-      .setStyle(ButtonStyle.Primary),
+      .setStyle(ButtonStyle.Success),
   );
 
   const embed = new EmbedBuilder()
     .setColor(0xfee75c)
-    .setTitle("🛠️ Painel de administração")
+    .setTitle("🛠️ Painel Administrativo")
+    .setDescription("**Gerencie estoque, keys e usuários de forma rápida e prática.**")
     .addFields(
       {
-        name: "📦 Estoque",
-        value: "Adicione contas aos produtos. Rockstar 50% é o slot de desconto.",
+        name: "📦 Adicionar Estoque",
+        value: "Clique nos botões **＋** para adicionar contas aos produtos.",
+        inline: false
       },
       {
-        name: "🎁 Resgatar 10 unidades",
-        value: "Resgata 10 contas de uma vez para uso externo (envia no privado).",
+        name: "🎁 Resgatar Produtos",
+        value: "Resgata múltiplas contas de qualquer produto para uso externo (enviado no privado).",
+        inline: false
       },
       {
-        name: "🔑 Keys",
-        value: "Gera keys de uso único.\nFormatos: `1h` `6h` `1d` `3d` `1w` `1mo` `6mo` `1ano` `vitalicio`",
+        name: "🔑 Gerenciar Keys",
+        value: "• **Gerar Key**: Cria uma key individual\n• **Keys em Lote**: Cria várias keys de uma vez\n• **Key Free**: Key gratuita (acesso limitado)\n• **Resetar Key**: Torna uma key usada disponível novamente",
+        inline: false
       },
       {
-        name: "🚫 Remover acesso",
-        value: "Cola o ID do usuário e o acesso é revogado. Volta ao normal ao resgatar uma nova key.",
+        name: "👥 Gerenciar Usuários",
+        value: "• **Remover Acesso**: Revoga acesso de um usuário\n• **Ver Planos**: Lista todos os usuários e seus planos\n• **Pausar Free**: Desativa resgate de keys gratuitas",
+        inline: false
       },
       {
-        name: "🔄 Resetar key",
-        value: "Cola a key e ela volta ao estado não-resgatada — pode ser usada em outro Discord.",
-      },
-      {
-        name: "📋 Ver planos",
-        value: "Exporta lista de todos os usuários com planos (ativos e expirados).",
-      },
-      {
-        name: "🆓 Key free",
-        value: "Gera keys de acesso gratuito.\nSó liberam **Rockstar 50%** e **Steam** com cooldown configurável (padrão 8h).",
-      },
-      {
-        name: "⛔ Blacklist / ✅ Remover Blacklist",
-        value: "Adiciona ou remove um usuário da blacklist pelo ID.\nUsuários na blacklist não podem usar o gerador nem resgatar keys.\nRemoção custa **R$ 5,00**.",
+        name: "⛔ Blacklist",
+        value: "Adicione ou remova usuários da lista de bloqueio.",
+        inline: false
       },
     )
-    .setFooter({ text: "Apenas administradores podem usar este painel." })
+    .setFooter({ text: "🔐 Acesso restrito a administradores" })
     .setTimestamp();
 
-  return { embeds: [embed], components: [rowStock1, rowBulkRedeem, rowAdmin, rowFree] };
+  return { embeds: [embed], components: [rowStock, rowRedeemKeys, rowManagement, rowBlacklist] };
 }
 
 // ---------------------------------------------------------------------------
@@ -1887,6 +1866,42 @@ async function handleInteraction(interaction) {
       return;
     }
 
+    // Resgatar produtos em quantidade personalizada (admin)
+    if (interaction.customId === "admin:bulk-redeem") {
+      if (!isAdmin(interaction.user.id)) {
+        await interaction.reply({ content: "Somente administradores podem usar esta função.", flags: MessageFlags.Ephemeral });
+        return;
+      }
+
+      const modal = new ModalBuilder()
+        .setCustomId("admin:bulk-redeem:submit")
+        .setTitle("Resgatar Produtos");
+
+      modal.addComponents(
+        new ActionRowBuilder().addComponents(
+          new TextInputBuilder()
+            .setCustomId("product")
+            .setLabel("Produto")
+            .setPlaceholder("rockstar, discord, steam ou rockstar_50")
+            .setStyle(TextInputStyle.Short)
+            .setRequired(true)
+            .setMaxLength(20)
+        ),
+        new ActionRowBuilder().addComponents(
+          new TextInputBuilder()
+            .setCustomId("quantity")
+            .setLabel("Quantidade")
+            .setPlaceholder("Ex.: 10")
+            .setStyle(TextInputStyle.Short)
+            .setRequired(true)
+            .setMaxLength(4)
+        )
+      );
+
+      await interaction.showModal(modal);
+      return;
+    }
+
     // Resgatar 10 unidades de um produto (admin only)
     if (interaction.customId.startsWith("admin:redeem10:")) {
       if (!isAdmin(interaction.user.id)) {
@@ -2084,6 +2099,127 @@ async function handleInteraction(interaction) {
       embeds: [embed],
       flags: MessageFlags.Ephemeral
     });
+    return;
+  }
+
+  // Resgatar produtos em massa (admin)
+  if (interaction.customId === "admin:bulk-redeem:submit") {
+    if (!isAdmin(interaction.user.id)) {
+      await interaction.reply({ content: "Somente administradores podem usar esta função.", flags: MessageFlags.Ephemeral });
+      return;
+    }
+
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+    const productInput = interaction.fields.getTextInputValue("product").trim().toLowerCase();
+    const quantityInput = interaction.fields.getTextInputValue("quantity").trim();
+
+    // Validar produto
+    const validProducts = {
+      "rockstar": "rockstar",
+      "discord": "discord",
+      "steam": "steam",
+      "rockstar_50": "rockstar_50",
+      "rockstar50": "rockstar_50",
+      "rockstar 50": "rockstar_50"
+    };
+
+    const productId = validProducts[productInput];
+
+    if (!productId) {
+      await interaction.editReply({
+        content: `❌ Produto inválido! Use um desses:\n• \`rockstar\`\n• \`discord\`\n• \`steam\`\n• \`rockstar_50\``
+      });
+      return;
+    }
+
+    // Validar quantidade
+    if (!/^\d+$/.test(quantityInput)) {
+      await interaction.editReply({ content: "❌ Quantidade inválida! Use apenas números." });
+      return;
+    }
+
+    const quantity = Number(quantityInput);
+
+    if (quantity < 1 || quantity > 100) {
+      await interaction.editReply({ content: "❌ A quantidade deve estar entre **1** e **100**." });
+      return;
+    }
+
+    // Resgatar do estoque
+    const result = await storage.transact((state) => {
+      const available = state.stock[productId].length;
+
+      if (available < quantity) {
+        return { status: "insufficient", available };
+      }
+
+      const accounts = [];
+      for (let i = 0; i < quantity; i++) {
+        accounts.push(state.stock[productId].shift());
+      }
+
+      return { status: "success", accounts, remaining: state.stock[productId].length };
+    });
+
+    if (result.status === "insufficient") {
+      await interaction.editReply({
+        content: `❌ Estoque insuficiente!\n\n**Disponível:** ${result.available} contas de **${products[productId]}**\n**Solicitado:** ${quantity} contas`
+      });
+      return;
+    }
+
+    // Enviar no privado do admin
+    try {
+      // Dividir em mensagens de até 2000 caracteres
+      let currentMessage = `✅ **${quantity}x ${products[productId]}** resgatadas com sucesso!\n\n`;
+      const messages = [];
+
+      result.accounts.forEach((account, index) => {
+        const line = `**${index + 1}.** \`${account}\`\n`;
+        
+        if ((currentMessage + line).length > 1900) {
+          messages.push(currentMessage);
+          currentMessage = line;
+        } else {
+          currentMessage += line;
+        }
+      });
+
+      if (currentMessage) messages.push(currentMessage);
+
+      // Enviar todas as mensagens
+      for (const msg of messages) {
+        await interaction.user.send({ content: msg });
+      }
+
+      await interaction.editReply({
+        content: `✅ **${quantity}x ${products[productId]}** enviadas no seu privado!\n\n📊 **Estoque restante:** ${result.remaining} contas`
+      });
+
+      // Log admin
+      await sendLog("success", "🎁 Admin resgatou produtos em massa", [
+        { label: "Admin", value: `<@${interaction.user.id}>` },
+        { label: "Produto", value: products[productId] },
+        { label: "Quantidade", value: `${quantity} contas` },
+        { label: "Estoque restante", value: `${result.remaining} contas` },
+      ], interaction.user);
+
+    } catch (dmError) {
+      console.error("Não foi possível enviar DM ao admin:", dmError);
+      
+      // Devolver contas ao estoque
+      await storage.transact((state) => {
+        result.accounts.reverse().forEach(account => {
+          state.stock[productId].unshift(account);
+        });
+      });
+
+      await interaction.editReply({
+        content: `❌ Não consegui enviar no seu privado!\n\n**Abra suas mensagens diretas** e tente novamente.\n\n*As ${quantity} contas foram devolvidas ao estoque.*`
+      });
+    }
+
     return;
   }
 
