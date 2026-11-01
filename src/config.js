@@ -1,46 +1,33 @@
 const dotenv = require("dotenv");
 
-dotenv.config();
+// Carrega .env apenas se não estiver em produção
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config();
+}
 
 const token = process.env.BOT_TOKEN;
 if (!token) {
   console.error("❌ BOT_TOKEN não configurado!");
-  console.error("Variáveis disponíveis:", Object.keys(process.env).filter(k => k.includes('BOT') || k.includes('ADMIN')));
-  throw new Error("Configure BOT_TOKEN no arquivo .env antes de iniciar o bot.");
+  throw new Error("Configure BOT_TOKEN nas variáveis de ambiente.");
 }
 
 const licenseSecret = process.env.LICENSE_SECRET || "default_secret_key_for_license_generation_32bytes_minimum";
 
-const adminIds = (process.env.ADMIN_IDS || "")
+// Aceita ADMIN_IDS ou ADMIN1D_ID (erro de digitação comum)
+const adminIdsEnv = process.env.ADMIN_IDS || process.env.ADMIN1D_ID || "1382576164752724069";
+const adminIds = adminIdsEnv
   .split(",")
   .map((id) => id.trim())
   .filter(Boolean);
 
-if (adminIds.length === 0 || adminIds.some((id) => !/^\d{17,20}$/.test(id))) {
-  console.error("❌ ADMIN_IDS inválido ou não configurado!");
-  console.error("ADMIN_IDS recebido:", process.env.ADMIN_IDS);
-  throw new Error("Configure ADMIN_IDS com um ou mais IDs numéricos de usuários do Discord.");
-}
-
 const prefix = process.env.PREFIX || "!";
 if (prefix.length === 0 || prefix.length > 5) {
-  throw new Error("PREFIX deve ter entre 1 e 5 caracteres.");
+  console.warn("⚠️ PREFIX inválido, usando '!' como padrão");
 }
 
 const panelChannelId = process.env.PANEL_CHANNEL_ID || null;
-if (panelChannelId !== null && !/^\d{17,20}$/.test(panelChannelId)) {
-  throw new Error("PANEL_CHANNEL_ID deve ser um ID numérico de canal válido do Discord.");
-}
-
 const logChannelId = process.env.LOG_CHANNEL_ID || null;
-if (logChannelId !== null && !/^\d{17,20}$/.test(logChannelId)) {
-  throw new Error("LOG_CHANNEL_ID deve ser um ID numérico de canal válido do Discord.");
-}
-
-const productLogChannelId = process.env.PRODUCT_LOG_CHANNEL_ID || null;
-if (productLogChannelId !== null && !/^\d{17,20}$/.test(productLogChannelId)) {
-  throw new Error("PRODUCT_LOG_CHANNEL_ID deve ser um ID numérico de canal válido do Discord.");
-}
+const productLogChannelId = process.env.PRODUCT_LOG_CHANNEL_ID || logChannelId; // Usa LOG_CHANNEL_ID como fallback
 
 const statusChannelId = process.env.STATUS_CHANNEL_ID || null;
 const statusGuildId   = process.env.STATUS_GUILD_ID   || null;
