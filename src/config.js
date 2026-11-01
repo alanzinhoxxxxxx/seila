@@ -4,6 +4,8 @@ dotenv.config();
 
 const token = process.env.BOT_TOKEN;
 if (!token) {
+  console.error("❌ BOT_TOKEN não configurado!");
+  console.error("Variáveis disponíveis:", Object.keys(process.env).filter(k => k.includes('BOT') || k.includes('ADMIN')));
   throw new Error("Configure BOT_TOKEN no arquivo .env antes de iniciar o bot.");
 }
 
@@ -15,6 +17,8 @@ const adminIds = (process.env.ADMIN_IDS || "")
   .filter(Boolean);
 
 if (adminIds.length === 0 || adminIds.some((id) => !/^\d{17,20}$/.test(id))) {
+  console.error("❌ ADMIN_IDS inválido ou não configurado!");
+  console.error("ADMIN_IDS recebido:", process.env.ADMIN_IDS);
   throw new Error("Configure ADMIN_IDS com um ou mais IDs numéricos de usuários do Discord.");
 }
 
