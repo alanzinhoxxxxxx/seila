@@ -302,6 +302,7 @@ const client = new Client({
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildInvites,
   ],
 });
 
@@ -2537,6 +2538,118 @@ async function startStatusEmbed() {
   setTimeout(tick, 2000);
   setInterval(tick, 5000);
 }
+
+// ---------------------------------------------------------------------------
+// Logs de Entrada e Saída de Membros
+// ---------------------------------------------------------------------------
+
+client.on("guildMemberAdd", async (member) => {
+  try {
+    // Canal de log (STATUS_CHANNEL_ID do .env)
+    if (!statusChannelId) return;
+    
+    const logChannel = await client.channels.fetch(statusChannelId).catch(() => null);
+    if (!logChannel?.isTextBased()) return;
+
+    // Buscar informações do convite (quem convidou)
+    let inviter = null;
+    try {
+      const invites = await member.guild.invites.fetch();
+      const cachedInvites = member.guild._cachedInvites || new Map();
+      
+      for (const [code, invite] of invites) {
+        const cached = cachedInvites.get(code);
+        if (cached && invite.uses > cached.uses) {
+          inviter = invite.inviter;
+          break;
+        }
+      }
+      
+      // Atualizar cache
+      member.guild._cachedInvites = invites;
+    } catch (err) {
+      console.error("Erro ao buscar convites:", err);
+    }
+
+    // Calcular idade da conta
+    const accountCreated = member.user.createdAt;
+    const accountAge = Math.floor((Date.now() - accountCreated.getTime()) / (1000 * 60 * 60 * 24));
+    
+    const embed = new EmbedBuilder()
+      .setColor(0x57f287) // Verde
+      .setTitle("🟢 Novo Membro")
+      .setThumbnail(member.user.displayAvatarURL({ size: 128 }))
+      .addFields(
+        { name: "👤 Informações", value: `**Username:** ${member.user.username}\n**ID:** ${member.user.id}\n**Menção:** <@${member.user.id}>`, inline: false },
+        { name: "📅 Conta criada", value: `${accountCreated.toLocaleDateString("pt-BR")}, ${accountCreated.toLocaleTimeString("pt-BR")} (há ${accountAge} dias)`, inline: false },
+        { name: "🤖 Bot", value: member.user.bot ? "Sim" : "Não", inline: true },
+        { name: "📊 Total de membros", value: String(member.guild.memberCount), inline: true }
+      )
+      .setFooter({ text: "Máxima Store • Bem-vindo • Ordem às " })
+      .setTimestamp();
+
+    if (inviter) {
+      embed.addFields({ name: "🎟️ Convidado por", value: `${inviter.username} (<@${inviter.id}>)`, inline: false });
+    }
+
+    await logChannel.send({ embeds: [embed] });
+  } catch (error) {
+    console.error("Erro ao logar entrada de membro:", error);
+  }
+});
+
+client.on("guildMemberRemove", async (member) => {
+  try {
+    // Canal de log (STATUS_CHANNEL_ID do .env)
+    if (!statusChannelId) return;
+    
+    const logChannel = await client.channels.fetch(statusChannelId).catch(() => null);
+    if (!logChannel?.isTextBased()) return;
+
+    // Calcular tempo no servidor
+    const joinedAt = member.joinedAt;
+    const timeInServer = joinedAt ? Math.floor((Date.now() - joinedAt.getTime()) / (1000 * 60 * 60 * 24)) : null;
+    
+    const embed = new EmbedBuilder()
+      .setColor(0xed4245) // Vermelho
+      .setTitle("🔴 Membro Saiu")
+      .setThumbnail(member.user.displayAvatarURL({ size: 128 }))
+      .addFields(
+        { name: "👤 Informações", value: `**Username:** ${member.user.username}\n**ID:** ${member.user.id}`, inline: false },
+        { name: "📅 Entrou em", value: joinedAt ? `${joinedAt.toLocaleDateString("pt-BR")}, ${joinedAt.toLocaleTimeString("pt-BR")}` : "Data desconhecida", inline: false }
+      )
+      .setFooter({ text: "Máxima Store • Até logo • Ordem às " })
+      .setTimestamp();
+
+    if (timeInServer !== null) {
+      embed.addFields({ name: "⏱️ Tempo no servidor", value: `${timeInServer} dia(s)`, inline: true });
+    }
+
+    embed.addFields({ name: "📊 Total de membros", value: String(member.guild.memberCount), inline: true });
+
+    await logChannel.send({ embeds: [embed] });
+  } catch (error) {
+    console.error("Erro ao logar saída de membro:", error);
+  }
+});
+
+// Cache de convites para rastrear quem convidou
+client.on("ready", async () => {
+  console.log(`Bot conectado como ${client.user.tag}.`);
+  
+  // Cachear convites de todos os servidores
+  for (const guild of client.guilds.cache.values()) {
+    try {
+      const invites = await guild.invites.fetch();
+      guild._cachedInvites = invites;
+    } catch (err) {
+      console.error(`Erro ao cachear convites do servidor ${guild.name}:`, err.message);
+    }
+  }
+
+  startStatusEmbed();
+  startStatsEmbed();
+});
 
 async function start() {
   await storage.init();
